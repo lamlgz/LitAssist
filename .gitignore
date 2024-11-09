@@ -1,0 +1,18 @@
+# Node.js
+my-app/node_modules/
+
+# Python
+my-backend/venv/
+my-backend/__pycache__/
+
+# General
+*.pyc
+*.log
+*.sqlite3
+
+# Environment variables
+*.env
+
+# System files
+.DS_Store
+Thumbs.db
