@@ -1,0 +1,23 @@
+/* src/components/Home/HomePage.css */
+
+.homepage-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    height: 100vh;
+    color: #333;
+  }
+  
+  h2 {
+    font-size: 2em;
+    margin-bottom: 20px;
+  }
+  
+  .hello-message {
+    font-size: 1.5em;
+    color: #27ae60; /* 设置为绿色 */
+    margin-top: 10px;
+  }
+  
