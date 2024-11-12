@@ -28,4 +28,10 @@ urlpatterns = [
     path('', home),  # 设置根 URL 的默认视图
     path('admin/', admin.site.urls),
     path('api/', include('api.urls')),  # 将 api 应用的路由包含进来
+    path('chart/', include('Chart.urls')),
+    path('format/', include('Format.urls')),
+    path('home/', include('Home.urls')),
+    path('search/', include('Search.urls')),
+    path('summary/', include('Summary.urls')),
+    path('translate/', include('Translate.urls'))
 ]

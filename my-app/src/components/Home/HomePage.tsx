@@ -12,7 +12,7 @@ function HomePage() {
   const [message, setMessage] = useState<string>('');
 
   useEffect(() => {
-    axios.get<HelloResponse>('http://127.0.0.1:8000/api/hello/')
+    axios.get<HelloResponse>('http://127.0.0.1:8000/home/hello/')
       .then(response => {
         setMessage(response.data.message);
       })
