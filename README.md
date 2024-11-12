@@ -12,6 +12,8 @@
 
 ## 基础环境搭建
 
+我是 windows
+
 * git clone
 
 * 前端
@@ -26,9 +28,11 @@
 
   
 
-* 后端：
+* 后端
 
-  需要激活 venv 的虚拟环境，所以写了个 start.bat
+  需要新建一个终端
+  
+  需要激活 venv 的虚拟环境，所以写了个 start.bat，liunx命令有些不同
   
   ```
   cd my-backend
