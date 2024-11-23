@@ -16,3 +16,7 @@ my-backend/__pycache__/
 # System files
 .DS_Store
 Thumbs.db
+
+# 忽略媒体文件
+media/
+

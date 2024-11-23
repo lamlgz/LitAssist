@@ -21,6 +21,11 @@ from django.contrib import admin
 from django.urls import path, include
 from django.http import HttpResponse
 
+# Add this to handle media files during development
+from django.conf import settings
+from django.conf.urls.static import static
+
+
 def home(request):
     return HttpResponse("Welcome to the Django homepage!")
 
@@ -35,3 +40,7 @@ urlpatterns = [
     path('summary/', include('Summary.urls')),
     path('translate/', include('Translate.urls'))
 ]
+
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
