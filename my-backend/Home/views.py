@@ -22,5 +22,21 @@ class FileUploadView(APIView):
         if not file:
             return Response({"error": "No file provided"}, status=400)
 
-        uploaded_file = UploadedFile.objects.create(file=file)
-        return Response({"message": "File uploaded successfully", "file_id": uploaded_file.id}, status=201)
+        # 提取文件信息
+        original_name = file.name
+        size = file.size
+
+        # 保存到数据库
+        uploaded_file = UploadedFile.objects.create(
+            file=file,
+            original_name=original_name,
+            size=size
+        )
+
+        return Response({
+            "message": "File uploaded successfully",
+            "file_id": uploaded_file.id,
+            "file_path": uploaded_file.file.url,
+            "original_name": uploaded_file.original_name,
+            "size": uploaded_file.size
+        }, status=201)

@@ -1,23 +1,42 @@
-/* src/components/Summary/SummaryPage.css */
-
 .page-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    height: 100vh;
-    color: #333;
-  }
-  
-  h2 {
-    font-size: 2em;
-    margin-bottom: 20px;
-  }
-  
-  .page-message {
-    font-size: 1.5em;
-    color: #27ae60; /* 绿色字体 */
-    margin-top: 10px;
-  }
-  
+  padding: 20px;
+  font-family: Arial, sans-serif;
+  max-width: 800px; /* 限制内容宽度 */
+  margin: 50px auto; /* 上下各增加 50px 的距离，居中布局 */
+}
+
+.page-title {
+  text-align: center;
+  font-size: 28px;
+  font-weight: bold;
+  margin-bottom: 30px;
+  margin-top: 800px; /* 适当调整标题与顶部的距离 */
+  color: #333;
+}
+
+.file-summary {
+  display: flex;
+  flex-direction: column; /* 从上到下排列 */
+  gap: 20px; /* 每部分间距 */
+}
+
+.summary-section {
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 30px; /* 增加每个部分之间的间距 */
+}
+
+.summary-section h3 {
+  font-size: 20px;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.summary-section p {
+  font-size: 16px;
+  color: #555;
+  line-height: 1.5;
+}
