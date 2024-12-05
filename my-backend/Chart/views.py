@@ -50,7 +50,7 @@ class ChartView(APIView):
             return JsonResponse({
                 "status": "success",
                 "file_id": chosen_img.id,  # 返回文件 ID
-                "data": ai_result  # 详细的文献信息
+                "data": info  # 详细的文献信息
             })
             
         except Exception as e:
