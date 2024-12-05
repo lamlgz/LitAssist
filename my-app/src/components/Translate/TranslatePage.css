@@ -9,6 +9,7 @@
 }
 
 .text-container {
+  font-family: Arial, sans-serif;
   height: 45vw;
   width: 45vw;
   resize: none;

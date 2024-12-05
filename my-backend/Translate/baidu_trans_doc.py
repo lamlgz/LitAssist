@@ -129,10 +129,10 @@ def do_translate(from_lang, to_lang, input, file_id, file_path, output='pdf'):
     if not os.path.exists(basedir):
         os.makedirs(basedir)
     # 下载到服务器的地址
-    file_path = basedir + '/' + str(file_id) + '_translate.pdf'
+    download_path = basedir + '/' + str(file_id) + '_translate.pdf'
     # 文件url
-    if os.path.exists(file_path):
-        return 0, file_path
+    if os.path.exists(download_path):
+        return 0, download_path
 
     trans_obj = Translate()
     trans_ret = json.loads(trans_obj.create_trans_job(from_lang, to_lang, input, file_id, file_path, output))
@@ -149,7 +149,8 @@ def do_translate(from_lang, to_lang, input, file_id, file_path, output='pdf'):
             elif query_trans_ret['data']['status'] == 2:
                 return 3, '翻译执行失败'
             elif query_trans_ret['data']['fileSrcUrl']:
-                result_path = file_download(query_trans_ret['data']['fileSrcUrl'], file_path)
+                result_path = file_download(query_trans_ret['data']['fileSrcUrl'], download_path)
+                print(result_path)
                 if not result_path:
                     return 4, '结果下载失败'
                 else:
