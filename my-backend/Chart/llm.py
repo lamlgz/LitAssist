@@ -1,7 +1,4 @@
-import openai
 import zhipuai
-
-gpt_api = ""
 
 Prompt = """你是一个pdf文档解析器，将使用markdown以及Latex语法进行输出，你需要将图片中识别到的表格信息转换为markdown格式进行输出。
 在输出过程中，你应当能够：
@@ -12,7 +9,7 @@ Prompt = """你是一个pdf文档解析器，将使用markdown以及Latex语法�
 
 
 def Zhipu_LLM_chart(img_url):
-    client = zhipuai.ZhipuAI(api_key="ac7a9f00db24d0fd11c01a24fdd2c5f1.2Qvt7Al3RHxJGz43") 
+    client = zhipuai.ZhipuAI(api_key="YOUR_KEY") 
     try:
         response = client.chat.completions.create(
             model="glm-4v",  # 填写需要调用的模型名称
