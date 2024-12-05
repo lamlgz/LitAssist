@@ -11,6 +11,7 @@ from rest_framework.response import Response
 from Home.models import UploadedFile
 from .models import ImageInfo
 from .llm import Zhipu_LLM_chart
+from .pdf import extract_images_from_pdf
 
 @api_view(['GET'])
 def hello_world(request):
@@ -20,6 +21,13 @@ def show_img(request):
     f_id = request.data.get("file_id")
     if not f_id:
         return JsonResponse({"status": "error", "message": "file_id is required"}, status=400)
+    try:
+        uploaded_file = UploadedFile.objects.get(id=f_id)
+    except UploadedFile.DoesNotExist:
+        return JsonResponse({"status": "error", "message": "File not found"}, status=404)
+    
+    extract_images_from_pdf(uploaded_file)
+    
     img = ImageInfo.objects.filter(file_id = f_id)
     data = list(img.values('image_id', 'img'))
 
