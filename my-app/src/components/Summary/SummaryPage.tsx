@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import axios from "axios";
 import "./SummaryPage.css";
+import { backend_port } from "../global_vars"
 
 // 定义后端响应的数据类型
 interface AnalyzeResponse {
@@ -55,7 +56,7 @@ const SummaryPage: React.FC<SummaryPageProps> = ({ onFileIdChange }) => {
     onFileIdChange?.(fileIdFromUrl);
 
     axios
-      .post<AnalyzeResponse>("http://127.0.0.1:8000/summary/make_summary/", {
+      .post<AnalyzeResponse>(`http://127.0.0.1:${backend_port}/summary/make_summary/`, {
         file_id: fileIdFromUrl,
       })
       .then((response) => {

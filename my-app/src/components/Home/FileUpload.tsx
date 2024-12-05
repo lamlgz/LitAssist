@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { backend_port } from "../global_vars"
 
 interface FileUploadProps {
   onUploadSuccess?: (fileId: number) => void; // 这里将 fileId 的类型设置为 number
@@ -27,7 +28,7 @@ const FileUpload: React.FC<FileUploadProps> = ({ onUploadSuccess }) => {
     setIsUploading(true); // 开始上传
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/home/upload/", {
+      const response = await fetch(`http://127.0.0.1:${backend_port}/home/upload/`, {
         method: "POST",
         body: formData,
       });

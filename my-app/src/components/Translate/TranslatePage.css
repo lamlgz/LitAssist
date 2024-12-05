@@ -1,23 +1,16 @@
-/* src/components/Translate/TranslatePage.css */
+.page-align {
+  text-align: center;
+  margin-top: 50px;
+}
 
-.page-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    height: 100vh;
-    color: #333;
-  }
-  
-  h2 {
-    font-size: 2em;
-    margin-bottom: 20px;
-  }
-  
-  .page-message {
-    font-size: 1.5em;
-    color: #27ae60; /* 绿色字体 */
-    margin-top: 10px;
-  }
+.horizontal-container {
+  display: flex;
+  justify-content: center;
+}
+
+.text-container {
+  height: 45vw;
+  width: 45vw;
+  resize: none;
+}
   

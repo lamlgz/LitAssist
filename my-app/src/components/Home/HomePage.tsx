@@ -3,6 +3,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom"; // 引入 useNavigate
 import FileUpload from "@/components/Home/FileUpload";
 import "./HomePage.css";
+import { backend_port } from "../global_vars"
 
 interface HelloResponse {
   message: string;
@@ -14,7 +15,7 @@ function HomePage() {
 
   useEffect(() => {
     axios
-      .get<HelloResponse>("http://127.0.0.1:8000/home/hello/")
+      .get<HelloResponse>(`http://127.0.0.1:${backend_port}/home/hello/`)
       .then((response) => {
         setMessage(response.data.message);
       })

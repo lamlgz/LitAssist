@@ -21,6 +21,11 @@ function App() {
     return storedFileId ? `/summary?fileId=${storedFileId}` : "/summary";
   };
 
+  const getTranslateLink = () => {
+    const storedFileId = localStorage.getItem("fileId");
+    return storedFileId ? `/translate?fileId=${storedFileId}` : "/translate";
+  };
+
   return (
     <Router>
       <div className="App">
@@ -29,7 +34,7 @@ function App() {
           <ul>
             <li><Link to="/">主页</Link></li>
             <li><Link to={getSummaryLink()}>文献信息提取和总结</Link></li>
-            <li><Link to="/translate">文献即时翻译</Link></li>
+            <li><Link to={getTranslateLink()}>文献即时翻译</Link></li>
             <li><Link to="/format">文献格式转换</Link></li>
             <li><Link to="/chart">图表信息提取</Link></li>
             <li><Link to="/search">相关论文检索</Link></li>
@@ -44,7 +49,7 @@ function App() {
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/summary" element={<SummaryPage onFileIdChange={handleFileIdChange} />} />
-            <Route path="/translate" element={<TranslatePage />} />
+            <Route path="/translate" element={<TranslatePage onFileIdChange={handleFileIdChange} />} />
             <Route path="/format" element={<FormatPage />} />
             <Route path="/chart" element={<ChartPage />} />
             <Route path="/search" element={<SearchPage />} />

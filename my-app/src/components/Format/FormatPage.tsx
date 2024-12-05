@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import './FormatPage.css';
+import { backend_port } from "../global_vars"
 
 // 定义后端响应的数据类型
 interface HelloResponse {
@@ -12,7 +13,7 @@ function FormatPage() {
   const [message, setMessage] = useState<string>('');
 
   useEffect(() => {
-    axios.get<HelloResponse>('http://127.0.0.1:8000/format/hello/')
+    axios.get<HelloResponse>(`http://127.0.0.1:${backend_port}/format/hello/`)
       .then(response => {
         setMessage(response.data.message);
       })

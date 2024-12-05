@@ -9,4 +9,4 @@ python manage.py migrate
 
 REM Start Django server
 echo Starting Django server...
-python manage.py runserver
+python manage.py runserver 8080

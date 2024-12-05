@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import './ChartPage.css';
+import { backend_port } from "../global_vars"
 
 // 定义后端响应的数据类型
 interface HelloResponse {
@@ -12,7 +13,7 @@ function ChartPage() {
   const [message, setMessage] = useState<string>('');
 
   useEffect(() => {
-    axios.get<HelloResponse>('http://127.0.0.1:8000/chart/hello/')
+    axios.get<HelloResponse>(`http://127.0.0.1:${backend_port}/chart/hello/`)
       .then(response => {
         setMessage(response.data.message);
       })
