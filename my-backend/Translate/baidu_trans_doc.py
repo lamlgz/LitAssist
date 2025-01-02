@@ -104,61 +104,53 @@ def file_download(file_url, download_path):
         return ''
 
 
-# from_lang = 'en'
-# to_lang = 'zh'
-# file_path = r'.\test.pdf'
-# extend = 'pdf'
-# output = 'pdf'
-# file_name = 'ceshi.pdf'
-# trans_obj = Translate()
-
-# 创建报价服务
-# quote_ret = trans_obj.create_quote_job(from_lang, to_lang, extend, file_name, file_path)
-# print(quote_ret)
-
-# 查询报价结果
-# file_id = '71d969e04f62cac86d7d16f6cc6b9413'
-# query_quote_ret = trans_obj.query_quote(file_id)
-# print(query_quote_ret)
-
 # 创建翻译服务
-def do_translate(from_lang, to_lang, input, file_id, file_path, output='pdf'):
-    # 文件基准路径
+def make_translate(from_lang, to_lang, input, file_id, src_path, output='pdf'):
     basedir = target_dir
-    # 如果没有这个path则直接创建
     if not os.path.exists(basedir):
         os.makedirs(basedir)
-    # 下载到服务器的地址
-    download_path = basedir + '/' + str(file_id) + '_translate.pdf'
-    # 文件url
-    if os.path.exists(download_path):
-        return 0, download_path
+    file_path = basedir + '/' + str(file_id) + '_translating.pdf'
+    if os.path.exists(file_path):
+        return 0, file_path
 
     trans_obj = Translate()
-    trans_ret = json.loads(trans_obj.create_trans_job(from_lang, to_lang, input, file_id, file_path, output))
+    trans_ret = json.loads(trans_obj.create_trans_job(from_lang, to_lang, input, file_id, src_path, output))
     if not trans_ret['code'] == 0:
         return 1, '翻译请求失败'
-    else:
-        request_id = trans_ret['data']['requestId']
-        # print(request_id)
-        for attmpt in range(999):
-            query_trans_ret = json.loads(trans_obj.query_trans(request_id))
-            # print(query_trans_ret)
-            if not query_trans_ret['code'] == 0:
-                return 2, '翻译查询失败'
-            elif query_trans_ret['data']['status'] == 2:
-                return 3, '翻译执行失败'
-            elif query_trans_ret['data']['fileSrcUrl']:
-                result_path = file_download(query_trans_ret['data']['fileSrcUrl'], download_path)
-                print(result_path)
-                if not result_path:
-                    return 4, '结果下载失败'
-                else:
-                    return 0, result_path
-            time.sleep(5)
-        return 5, '翻译耗时过长'
+    with open(file_path, 'w', encoding='utf-8') as file:
+        file.write(trans_ret['data']['requestId'])
+    return 0, file_path
+
 
 # 查询翻译结果
-# request_id = 3844576
-# query_trans_ret = trans_obj.query_trans(request_id)
-# print(query_trans_ret)
+def query_translate(file_id):
+    basedir = target_dir
+    if not os.path.exists(basedir):
+        os.makedirs(basedir)
+    download_path = basedir + '/' + str(file_id) + '_translated.pdf'
+    if os.path.exists(download_path):
+        return 0, download_path
+    file_path = basedir + '/' + str(file_id) + '_translating.pdf'
+    for retry in range(40):
+        if os.path.exists(file_path):
+            with open(file_path, 'r', encoding='utf-8') as file:
+                request_id = file.read()
+            trans_obj = Translate()
+            for attempt in range(999):
+                query_trans_ret = json.loads(trans_obj.query_trans(request_id))
+                print(query_trans_ret)
+                if not query_trans_ret['code'] == 0:
+                    return 2, '翻译查询失败'
+                elif query_trans_ret['data']['status'] == 2:
+                    os.remove(file_path)
+                    return 3, '翻译执行失败'
+                elif query_trans_ret['data']['fileSrcUrl']:
+                    result_path = file_download(query_trans_ret['data']['fileSrcUrl'], download_path)
+                    if not result_path:
+                        return 4, '结果下载失败'
+                    os.remove(file_path)
+                    return 0, result_path
+                time.sleep(5)
+            return 5, '翻译耗时过长'
+        time.sleep(5)
+    return 1, '翻译请求不存在'

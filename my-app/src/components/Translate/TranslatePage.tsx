@@ -5,24 +5,14 @@ import axios from 'axios';
 import './TranslatePage.css';
 import { backend_port } from "../global_vars"
 
-// 定义后端响应的数据类型
-interface AnalyzeResponse {
-  file_id: string; // 文件 ID
-  data: FileTrans; // 后端返回的 JSON 字符串或直接的对象
-}
-// 定义解析后的数据类型
-interface FileTrans {
-  origin: string
-  translate: string
-}
-
 // 定义组件属性类型
-interface SummaryPageProps {
+interface TranslatePageProps {
   onFileIdChange?: (fileId: string) => void; // 可选回调函数
 }
 
-const TranslatePage: React.FC<SummaryPageProps> = ({ onFileIdChange }) => {
-  const [fileTrans, setFileTrans] = useState<FileTrans | null>(null);
+const TranslatePage: React.FC<TranslatePageProps> = ({ onFileIdChange }) => {
+  const [fileTrans, setFileTrans] = useState<string | null>(null);
+  const [fileOrigin, setFileOrigin] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const location = useLocation();
@@ -49,30 +39,42 @@ const TranslatePage: React.FC<SummaryPageProps> = ({ onFileIdChange }) => {
 
     // 调用回调函数更新 fileId
     onFileIdChange?.(fileIdFromUrl);
-
-    axios
-      .post<AnalyzeResponse>(`http://127.0.0.1:${backend_port}/translate/make_translate/`, {
-        file_id: fileIdFromUrl,
-      })
-      .then((response) => {
-        let parsedData: FileTrans;
-
-        parsedData = response.data.data as FileTrans;
-
-        console.log("Parsed fileData:", parsedData);
-        setFileTrans(parsedData);
-
-        // 缓存数据
-        localStorage.setItem("transId", fileIdFromUrl);
-        localStorage.setItem("fileTrans", JSON.stringify(parsedData));
-
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error("Error while fetching summary:", err);
-        setError("获取翻译失败，请稍后重试。");
-        setLoading(false);
-      });
+    localStorage.setItem("transId", fileIdFromUrl);
+    fetch(`http://127.0.0.1:${backend_port}/translate/make_translate?file_id=${fileIdFromUrl}`)
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Response was not ok ' + response.statusText);
+      }
+      return response.blob()
+    }) // 确保响应被解析为Blob对象
+    .then(blob => {
+      const url = URL.createObjectURL(blob);
+      setFileOrigin(url);
+      // 完成后，记得释放ObjectURL
+      // URL.revokeObjectURL(url);
+      localStorage.setItem("fileOrigin", JSON.stringify(url));
+    })
+    .catch(error => {
+      console.error('Error fetching PDF:', error);
+    });
+    fetch(`http://127.0.0.1:${backend_port}/translate/query_translate?file_id=${fileIdFromUrl}`)
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Response was not ok ' + response.statusText);
+      }
+      return response.blob()
+    }) // 确保响应被解析为Blob对象
+    .then(blob => {
+      const url = URL.createObjectURL(blob);
+      setFileTrans(url);
+      setLoading(false);
+      // 完成后，记得释放ObjectURL
+      // URL.revokeObjectURL(url);
+      localStorage.setItem("fileTrans", JSON.stringify(url));
+    })
+    .catch(error => {
+      console.error('Error fetching PDF:', error);
+    });
   }, [location.search, onFileIdChange]); // 依赖于 URL 的 fileId 和回调函数
 
   if (loading) {
@@ -93,14 +95,18 @@ const TranslatePage: React.FC<SummaryPageProps> = ({ onFileIdChange }) => {
 
   return (
     <div className="page-align">
-        {fileTrans ? (
-          <div className="horizontal-container">
-            <textarea className="text-container" defaultValue={fileTrans.origin || ""} readOnly />
-            <textarea className="text-container" defaultValue={fileTrans.translate || ""} readOnly />
-          </div>
+      <div className="horizontal-container">
+        {fileOrigin ? (
+          <iframe className="text-container" src={fileOrigin}></iframe>
         ) : (
           <p>暂无数据</p>
         )}
+        {fileTrans ? (
+          <iframe className="text-container" src={fileTrans}></iframe>
+        ) : (
+          <p>暂无数据</p>
+        )}
+      </div>
     </div>
   );
 };

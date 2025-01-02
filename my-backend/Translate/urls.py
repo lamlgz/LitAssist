@@ -1,7 +1,8 @@
 # api/urls.py
 from django.urls import path
-from .views import ProcessPDFView
+from .views import MakeTranslate, QueryTranslate
 
 urlpatterns = [
-    path('make_translate/', ProcessPDFView.as_view(), name='make_translate'),  # 设置 hello 路由
+    path('make_translate/', MakeTranslate.as_view(), name='make_translate'),
+    path('query_translate/', QueryTranslate.as_view(), name='query_translate'),
 ]
