@@ -1,7 +1,6 @@
 // src/components/Translate/TranslatePage.tsx
 import React, { useEffect, useState } from 'react';
 import { useLocation } from "react-router-dom";
-import axios from 'axios';
 import './TranslatePage.css';
 import { backend_port } from "../global_vars"
 
@@ -97,12 +96,12 @@ const TranslatePage: React.FC<TranslatePageProps> = ({ onFileIdChange }) => {
     <div className="page-align">
       <div className="horizontal-container">
         {fileOrigin ? (
-          <iframe className="text-container" src={fileOrigin}></iframe>
+          <iframe className="text-container" src={fileOrigin + "#view=FitH,top&toolbar=0"}></iframe>
         ) : (
           <p>暂无数据</p>
         )}
         {fileTrans ? (
-          <iframe className="text-container" src={fileTrans}></iframe>
+          <iframe className="text-container" src={fileTrans + "#view=FitH,top&toolbar=0"}></iframe>
         ) : (
           <p>暂无数据</p>
         )}
