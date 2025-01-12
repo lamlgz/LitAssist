@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import axios from "axios";
 import "./SummaryPage.css";
+import { Document, Page, pdfjs } from "react-pdf";
 
 // 定义后端响应的数据类型
 interface AnalyzeResponse {
@@ -43,10 +44,18 @@ const SummaryPage: React.FC<SummaryPageProps> = ({ onFileIdChange }) => {
     }
 
     // 如果已经加载了相同的 fileId 数据，直接返回
+    console.log("Checking fileID:")
+    console.log("localStorage fileID = ", localStorage.getItem("fileId"), typeof(localStorage.getItem("fileId")))
+    console.log("fileIdFromUrl = ", fileIdFromUrl, typeof(fileIdFromUrl))
+    // TODO: 这里需要处理 fileData，现在输出为 null，导致每次刷新都需要重复渲染
+
+    console.log("fileData", fileData, typeof(fileData))
     if (fileData && localStorage.getItem("fileId") === fileIdFromUrl) {
+      console.log("Checking success!")
       setLoading(false);
       return;
     }
+    console.log("Checking fail!")
 
     setLoading(true);
     setError(null);

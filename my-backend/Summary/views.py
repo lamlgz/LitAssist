@@ -3,6 +3,7 @@ from rest_framework.views import APIView
 from Home.models import UploadedFile
 from .read_pdf import extract_text_from_pdf
 from .zhipu_api import process_with_ai
+import json
 
 class ProcessPDFView(APIView):
     def post(self, request, *args, **kwargs):
@@ -29,6 +30,7 @@ class ProcessPDFView(APIView):
 
             # 调用大模型 API 提取结构化信息
             ai_result = process_with_ai(pdf_text)
+            # ai_result = json.dumps(pdf_text)
 
             # 返回生成的详细信息和文件 ID
             return JsonResponse({
