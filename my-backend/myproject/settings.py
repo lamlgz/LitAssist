@@ -138,10 +138,10 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
+DATA_UPLOAD_MAX_MEMORY_SIZE = 104857600  # 设置上传文件的最大大小为 100MB
 
 import os
-
+#配置文件上传的目录
 MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
