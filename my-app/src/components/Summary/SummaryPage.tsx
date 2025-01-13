@@ -3,6 +3,16 @@ import { useLocation } from "react-router-dom";
 import axios from "axios";
 import "./SummaryPage.css";
 import { Document, Page, pdfjs } from "react-pdf";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faBook,
+  faUser,
+  faTag,
+  faFileAlt,
+  faSitemap,
+  faCheckCircle,
+  faArrowRight,
+} from "@fortawesome/free-solid-svg-icons";
 
 // 定义后端响应的数据类型
 interface AnalyzeResponse {
@@ -44,18 +54,22 @@ const SummaryPage: React.FC<SummaryPageProps> = ({ onFileIdChange }) => {
     }
 
     // 如果已经加载了相同的 fileId 数据，直接返回
-    console.log("Checking fileID:")
-    console.log("localStorage fileID = ", localStorage.getItem("fileId"), typeof(localStorage.getItem("fileId")))
-    console.log("fileIdFromUrl = ", fileIdFromUrl, typeof(fileIdFromUrl))
+    console.log("Checking fileID:");
+    console.log(
+      "localStorage fileID = ",
+      localStorage.getItem("fileId"),
+      typeof localStorage.getItem("fileId")
+    );
+    console.log("fileIdFromUrl = ", fileIdFromUrl, typeof fileIdFromUrl);
     // TODO: 这里需要处理 fileData，现在输出为 null，导致每次刷新都需要重复渲染
 
-    console.log("fileData", fileData, typeof(fileData))
+    console.log("fileData", fileData, typeof fileData);
     if (fileData && localStorage.getItem("fileId") === fileIdFromUrl) {
-      console.log("Checking success!")
+      console.log("Checking success!");
       setLoading(false);
       return;
     }
-    console.log("Checking fail!")
+    console.log("Checking fail!");
 
     setLoading(true);
     setError(null);
@@ -124,46 +138,94 @@ const SummaryPage: React.FC<SummaryPageProps> = ({ onFileIdChange }) => {
       <h2 className="page-title">文献内容总结</h2>
       {fileData ? (
         <div className="file-summary">
-          <div className="summary-section">
-            <h3>题目</h3>
+          {/* 题目卡片 */}
+          <div className="summary-card summary-card-title">
+            <div className="card-header">
+              <FontAwesomeIcon icon={faBook} className="summary-icon" />
+              <h3>题目</h3>
+            </div >
+            <div className="card-container">
             <p>{fileData.title || "暂无数据"}</p>
+            </div>
           </div>
-          <div className="summary-section">
-            <h3>作者</h3>
-            <p>{fileData.authors?.join(", ") || "暂无数据"}</p>
+          {/* 作者卡片 */}
+          <div className="summary-card summary-card-authors">
+            <div className="card-header">
+              <FontAwesomeIcon icon={faUser} className="summary-icon" />
+              <h3>作者</h3>
+            </div>
+            <div className="card-container">
+              {fileData.authors?.length
+                ? fileData.authors.map((author, index) => (
+                    <p key={index}>{author}</p>
+                  ))
+                : "暂无数据"}
+            </div>
           </div>
-          <div className="summary-section">
-            <h3>关键词</h3>
-            <p>{fileData.keywords?.join(", ") || "暂无数据"}</p>
+          {/* 关键词卡片 */}
+          <div className="summary-card summary-card-keywords">
+            <div className="card-header">
+              <FontAwesomeIcon icon={faTag} className="summary-icon" />
+              <h3>关键词</h3>
+            </div>
+            <div className="card-container">
+              {fileData.keywords?.length
+                ? fileData.keywords.map((keyword, index) => (
+                    <p key={index}>{keyword}</p>
+                  ))
+                : "暂无数据"}
+            </div>
           </div>
-          <div className="summary-section">
-            <h3>摘要</h3>
+          {/* 摘要卡片 */}
+          <div className="summary-card summary-card-abstract">
+            <div className="card-header">
+              <FontAwesomeIcon icon={faFileAlt} className="summary-icon" />
+              <h3>摘要</h3>
+            </div>
+            <div className="card-container">
             <p>{fileData.abstract || "暂无数据"}</p>
+            </div>
           </div>
-          <div className="summary-section">
-            <h3>全文总结</h3>
-            <p>{fileData.summary || "暂无数据"}</p>
-          </div>
-          <div className="summary-section">
-            <h3>全文结构</h3>
-            <div>
+          {/* 全文结构卡片 */}
+          <div className="summary-card summary-card-structure">
+            <div className="card-header">
+              <FontAwesomeIcon icon={faSitemap} className="summary-icon" />
+              <h3>全文结构</h3>
+            </div>
+            <div className="card-container">
               {fileData.structure
                 ? typeof fileData.structure === "object"
-                  ? Object.entries(fileData.structure).map(([key, value]) => (
-                      <div key={key}>
-                        <strong>{key}:</strong>{" "}
-                        {typeof value === "string" ? value : JSON.stringify(value)}
-                      </div>
-                    ))
+                  ? Object.entries(fileData.structure).map(
+                      ([key, value], index, array) => (
+                        <span key={key}>
+                          <strong>{key}</strong>
+                          {typeof value === "string"
+                            ? `: ${value}`
+                            : `: ${JSON.stringify(value)}`}
+                          {index < array.length - 1 && (
+                            <FontAwesomeIcon
+                              icon={faArrowRight}
+                              className="arrow-icon"
+                            />
+                          )}
+                        </span>
+                      )
+                    )
                   : Array.isArray(fileData.structure)
-                  ? fileData.structure.join(" -> ")
+                  ? fileData.structure.join(" → ")
                   : fileData.structure
                 : "暂无数据"}
             </div>
           </div>
-          <div className="summary-section">
-            <h3>结论</h3>
+          {/* 结论卡片 */}
+          <div className="summary-card summary-card-conclusion">
+            <div className="card-header">
+              <FontAwesomeIcon icon={faCheckCircle} className="summary-icon" />
+              <h3>结论</h3>
+            </div>
+            <div className="card-container">
             <p>{fileData.conclusion || "暂无数据"}</p>
+            </div>
           </div>
         </div>
       ) : (

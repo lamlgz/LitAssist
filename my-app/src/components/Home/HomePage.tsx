@@ -1,47 +1,60 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
-import { useNavigate } from "react-router-dom"; // 引入 useNavigate
+import React from "react";
+import { useNavigate } from "react-router-dom";
 import FileUpload from "@/components/Home/FileUpload";
 import "./HomePage.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faFileAlt,
+  faGlobe,
+  faFileCode,
+  faChartBar,
+  faSearch,
+} from "@fortawesome/free-solid-svg-icons";
 
-interface HelloResponse {
-  message: string;
-}
+const HomePage: React.FC = () => {
+  const navigate = useNavigate();
 
-function HomePage() {
-  const [message, setMessage] = useState<string>("");
-  const navigate = useNavigate(); // 初始化 useNavigate 钩子
-
-  useEffect(() => {
-    axios
-      .get<HelloResponse>("http://127.0.0.1:8000/home/hello/")
-      .then((response) => {
-        setMessage(response.data.message);
-      })
-      .catch((error) => {
-        console.error("Error fetching data:", error);
-      });
-  }, []);
-
-  // 文件上传成功后的回调
+  // 上传成功后回调
   const handleUploadSuccess = (fileId: number) => {
     console.log("Uploaded file ID:", fileId);
-    alert(`文件上传成功！文件 ID: ${fileId}`);
-    // 将 fileId 保存到 localStorage，以便后续使用
     localStorage.setItem("fileId", fileId.toString());
-    // 跳转到 "/summary" 页面并携带 file_id 作为参数
     navigate(`/summary?fileId=${fileId}`);
   };
 
-  return (
-    <div className="homepage-container">
-      <h2>欢迎使用智能文献阅读助手</h2>
-      <p className="hello-message">{message ? message : "加载中..."}</p>
+  const features = [
+    { label: "文献总结", route: "/summary", icon: faFileAlt },
+    { label: "即时翻译", route: "/translate", icon: faGlobe },
+    { label: "格式转换", route: "/format", icon: faFileCode },
+    { label: "图表提取", route: "/chart", icon: faChartBar },
+    { label: "论文检索", route: "/search", icon: faSearch },
+  ];
 
-      {/* 传递回调函数到 FileUpload 组件 */}
-      <FileUpload onUploadSuccess={handleUploadSuccess} />
+  return (
+    <div className="homepage">
+      <div className="title">
+        <h1>智能文献阅读助手</h1>
+        <p>Smart Literature Reading Assistant</p>
+      </div>
+      <div className="upload-section">
+        <FileUpload onUploadSuccess={handleUploadSuccess} />
+      </div>
+
+      <div className="features">
+        {features.map((feature, index) => (
+          <div
+            key={index}
+            className="feature"
+            onClick={() => navigate(feature.route)}
+          >
+            <div className="feature-icon">
+              <FontAwesomeIcon icon={feature.icon} />
+            </div>
+            <div className="feature-label">{feature.label}</div>
+          </div>
+        ))}
+      </div>
     </div>
   );
-}
+};
 
 export default HomePage;
