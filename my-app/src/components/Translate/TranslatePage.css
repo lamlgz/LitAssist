@@ -1,17 +1,37 @@
 .page-align {
   text-align: center;
-  margin-top: 50px;
+}
+
+.table-align {
+  margin-left: 37.4vw;
+}
+
+.option-container {
+  padding-left: 1vw;
+  padding-right: 1vw;
+  margin-left: 0.5vw;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+.selected-container {
+  padding-left: 1vw;
+  padding-right: 1vw;
+  margin-left: 0.5vw;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #a6f0ff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .horizontal-container {
   display: flex;
-  justify-content: center;
 }
 
 .text-container {
   font-family: Arial, sans-serif;
   height: 45vw;
-  width: 45vw;
   resize: none;
   border: none;
 }

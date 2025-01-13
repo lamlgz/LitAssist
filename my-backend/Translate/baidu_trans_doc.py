@@ -109,7 +109,7 @@ def make_translate(from_lang, to_lang, input, file_id, src_path, output='pdf'):
     basedir = target_dir
     if not os.path.exists(basedir):
         os.makedirs(basedir)
-    file_path = basedir + '/' + str(file_id) + '_translating.txt'
+    file_path = basedir + '/' + str(file_id) + '_translating_' + to_lang + '.txt'
     if os.path.exists(file_path):
         return 0, file_path
 
@@ -123,14 +123,14 @@ def make_translate(from_lang, to_lang, input, file_id, src_path, output='pdf'):
 
 
 # 查询翻译结果
-def query_translate(file_id):
+def query_translate(file_id, to_lang):
     basedir = target_dir
     if not os.path.exists(basedir):
         os.makedirs(basedir)
-    download_path = basedir + '/' + str(file_id) + '_translated.pdf'
+    download_path = basedir + '/' + str(file_id) + '_translated_' + to_lang + '.pdf'
     if os.path.exists(download_path):
         return 0, download_path
-    file_path = basedir + '/' + str(file_id) + '_translating.txt'
+    file_path = basedir + '/' + str(file_id) + '_translating_' + to_lang + '.txt'
     for retry in range(40):
         if os.path.exists(file_path):
             with open(file_path, 'r', encoding='utf-8') as file:
