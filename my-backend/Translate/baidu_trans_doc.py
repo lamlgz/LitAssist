@@ -138,7 +138,7 @@ def query_translate(file_id, to_lang):
             trans_obj = Translate()
             for attempt in range(999):
                 query_trans_ret = json.loads(trans_obj.query_trans(request_id))
-                print(query_trans_ret)
+                # print(query_trans_ret)
                 if not query_trans_ret['code'] == 0:
                     return 2, '翻译查询失败'
                 elif query_trans_ret['data']['status'] == 2:

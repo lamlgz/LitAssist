@@ -50,7 +50,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ onLogin, onRegister, onClose }) => 
     setIsSubmitting(true);
 
     const endpoint =
-      `http://127.0.0.1:${backend_port}}` +
+      `http://127.0.0.1:${backend_port}` +
       (isLoginMode ? "/home/login/" : "/home/register/");
     const payload = isLoginMode
       ? { username: formData.username, password: formData.password }

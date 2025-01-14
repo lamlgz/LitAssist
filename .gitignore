@@ -20,3 +20,5 @@ Thumbs.db
 # 忽略媒体文件
 media/
 
+# 忽略IDE文件
+.idea/
