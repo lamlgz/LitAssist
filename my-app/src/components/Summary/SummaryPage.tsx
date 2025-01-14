@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
 import axios from "axios";
 import "./SummaryPage.css";
-import { Document, Page, pdfjs } from "react-pdf";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faBook,
@@ -31,23 +29,16 @@ interface FileData {
   conclusion: string;
 }
 
-// 定义组件属性类型
-interface SummaryPageProps {
-  onFileIdChange?: (fileId: string) => void; // 可选回调函数
-}
-
-const SummaryPage: React.FC<SummaryPageProps> = ({ onFileIdChange }) => {
-  const [fileData, setFileData] = useState<FileData | null>(null);
+const SummaryPage: React.FC = () => {
+  // const [summaryData, setSummaryData] = useState<FileData | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const location = useLocation();
+  const summaryData = localStorage.getItem("summaryData");
+  const fileId = localStorage.getItem("fileId");
 
   useEffect(() => {
-    const params = new URLSearchParams(location.search);
-    const fileIdFromUrl = params.get("fileId");
-
     // 如果 URL 中没有 fileId，设置错误
-    if (!fileIdFromUrl) {
+    if (!fileId) {
       setError("未提供有效的文件 ID。");
       setLoading(false);
       return;
@@ -56,15 +47,20 @@ const SummaryPage: React.FC<SummaryPageProps> = ({ onFileIdChange }) => {
     // 如果已经加载了相同的 fileId 数据，直接返回
     console.log("Checking fileID:");
     console.log(
-      "localStorage fileID = ",
-      localStorage.getItem("fileId"),
-      typeof localStorage.getItem("fileId")
+      "localStorage summaryId = ",
+      localStorage.getItem("summaryId"),
+      typeof localStorage.getItem("summaryId")
     );
-    console.log("fileIdFromUrl = ", fileIdFromUrl, typeof fileIdFromUrl);
-    // TODO: 这里需要处理 fileData，现在输出为 null，导致每次刷新都需要重复渲染
-
-    console.log("fileData", fileData, typeof fileData);
-    if (fileData && localStorage.getItem("fileId") === fileIdFromUrl) {
+    console.log("fileId = ", fileId, typeof fileId);
+    console.log(
+      "summaryData",
+      localStorage.getItem("summaryData"),
+      typeof localStorage.getItem("summaryData")
+    );
+    if (
+      localStorage.getItem("summaryData") &&
+      localStorage.getItem("summaryId") === fileId
+    ) {
       console.log("Checking success!");
       setLoading(false);
       return;
@@ -74,16 +70,12 @@ const SummaryPage: React.FC<SummaryPageProps> = ({ onFileIdChange }) => {
     setLoading(true);
     setError(null);
 
-    // 调用回调函数更新 fileId
-    onFileIdChange?.(fileIdFromUrl);
-
     axios
       .post<AnalyzeResponse>("http://127.0.0.1:8000/summary/make_summary/", {
-        file_id: fileIdFromUrl,
+        file_id: fileId,
       })
       .then((response) => {
         let parsedData: FileData;
-
         try {
           // 检查是否已经是对象
           if (typeof response.data.data === "object") {
@@ -101,12 +93,11 @@ const SummaryPage: React.FC<SummaryPageProps> = ({ onFileIdChange }) => {
           return;
         }
 
-        console.log("Parsed fileData:", parsedData);
-        setFileData(parsedData);
+        console.log("Parsed summaryData:", parsedData, typeof summaryData);
 
         // 缓存数据
-        localStorage.setItem("fileId", fileIdFromUrl);
-        localStorage.setItem("fileData", JSON.stringify(parsedData));
+        localStorage.setItem("summaryId", fileId);
+        localStorage.setItem("summaryData", JSON.stringify(parsedData));
 
         setLoading(false);
       })
@@ -115,7 +106,7 @@ const SummaryPage: React.FC<SummaryPageProps> = ({ onFileIdChange }) => {
         setError("加载文献信息失败，请稍后重试。");
         setLoading(false);
       });
-  }, [location.search, onFileIdChange]); // 依赖于 URL 的 fileId 和回调函数
+  }, [fileId, summaryData]); // 依赖于 URL 的 fileId 和回调函数
 
   if (loading) {
     return (
@@ -132,20 +123,22 @@ const SummaryPage: React.FC<SummaryPageProps> = ({ onFileIdChange }) => {
       </div>
     );
   }
+  console.log("summaryData", summaryData, typeof summaryData);
+  if (typeof summaryData === "string") {
+    const parsedData = JSON.parse(summaryData) as FileData;
+    return (
+      <div className="page-container">
+        <h2 className="page-title">文献内容总结</h2>
 
-  return (
-    <div className="page-container">
-      <h2 className="page-title">文献内容总结</h2>
-      {fileData ? (
         <div className="file-summary">
           {/* 题目卡片 */}
           <div className="summary-card summary-card-title">
             <div className="card-header">
               <FontAwesomeIcon icon={faBook} className="summary-icon" />
               <h3>题目</h3>
-            </div >
+            </div>
             <div className="card-container">
-            <p>{fileData.title || "暂无数据"}</p>
+              <p>{parsedData.title || "暂无数据"}</p>
             </div>
           </div>
           {/* 作者卡片 */}
@@ -155,8 +148,8 @@ const SummaryPage: React.FC<SummaryPageProps> = ({ onFileIdChange }) => {
               <h3>作者</h3>
             </div>
             <div className="card-container">
-              {fileData.authors?.length
-                ? fileData.authors.map((author, index) => (
+              {parsedData.authors?.length
+                ? parsedData.authors.map((author, index) => (
                     <p key={index}>{author}</p>
                   ))
                 : "暂无数据"}
@@ -169,9 +162,9 @@ const SummaryPage: React.FC<SummaryPageProps> = ({ onFileIdChange }) => {
               <h3>关键词</h3>
             </div>
             <div className="card-container">
-              {fileData.keywords?.length
-                ? fileData.keywords.map((keyword, index) => (
-                    <p key={index}>{keyword}</p>
+              {parsedData.keywords?.length
+                ? parsedData.keywords.map((keyword, index) => (
+                  <p key={index} className="keyword-item">{keyword}</p> // 每个关键词渲染为独立段落
                   ))
                 : "暂无数据"}
             </div>
@@ -183,7 +176,7 @@ const SummaryPage: React.FC<SummaryPageProps> = ({ onFileIdChange }) => {
               <h3>摘要</h3>
             </div>
             <div className="card-container">
-            <p>{fileData.abstract || "暂无数据"}</p>
+              <p>{parsedData.abstract || "暂无数据"}</p>
             </div>
           </div>
           {/* 全文结构卡片 */}
@@ -193,9 +186,9 @@ const SummaryPage: React.FC<SummaryPageProps> = ({ onFileIdChange }) => {
               <h3>全文结构</h3>
             </div>
             <div className="card-container">
-              {fileData.structure
-                ? typeof fileData.structure === "object"
-                  ? Object.entries(fileData.structure).map(
+              {parsedData.structure
+                ? typeof parsedData.structure === "object"
+                  ? Object.entries(parsedData.structure).map(
                       ([key, value], index, array) => (
                         <span key={key}>
                           <strong>{key}</strong>
@@ -211,9 +204,9 @@ const SummaryPage: React.FC<SummaryPageProps> = ({ onFileIdChange }) => {
                         </span>
                       )
                     )
-                  : Array.isArray(fileData.structure)
-                  ? fileData.structure.join(" → ")
-                  : fileData.structure
+                  : Array.isArray(parsedData.structure)
+                  ? parsedData.structure.join(" → ")
+                  : parsedData.structure
                 : "暂无数据"}
             </div>
           </div>
@@ -224,15 +217,19 @@ const SummaryPage: React.FC<SummaryPageProps> = ({ onFileIdChange }) => {
               <h3>结论</h3>
             </div>
             <div className="card-container">
-            <p>{fileData.conclusion || "暂无数据"}</p>
+              <p>{parsedData.conclusion || "暂无数据"}</p>
             </div>
           </div>
         </div>
-      ) : (
+      </div>
+    );
+  } else {
+    return (
+      <div className="page-container">
         <p>暂无数据</p>
-      )}
-    </div>
-  );
+      </div>
+    );
+  }
 };
 
 export default SummaryPage;

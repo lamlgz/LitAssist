@@ -18,7 +18,7 @@ const HomePage: React.FC = () => {
   const handleUploadSuccess = (fileId: number) => {
     console.log("Uploaded file ID:", fileId);
     localStorage.setItem("fileId", fileId.toString());
-    navigate(`/summary?fileId=${fileId}`);
+    navigate(`/summary`);
   };
 
   const features = [

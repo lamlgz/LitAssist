@@ -21,7 +21,6 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 
 function App() {
-  const [fileId, setFileId] = useState<string | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
@@ -40,11 +39,6 @@ function App() {
 
   // 从 localStorage 加载文件ID
   useEffect(() => {
-    const storedFileId = localStorage.getItem("fileId");
-    if (storedFileId) {
-      setFileId(storedFileId);
-    }
-
     const token = localStorage.getItem("accessToken");
     if (token) {
       setIsLoggedIn(true);
@@ -64,15 +58,6 @@ function App() {
     };
   }, []);
 
-  // 更新文件ID并保存到 localStorage
-  const handleFileIdChange = (id: string) => {
-    setFileId(id);
-    localStorage.setItem("fileId", id);
-  };
-
-  const getSummaryLink = () => {
-    return fileId ? `/summary?fileId=${fileId}` : "/summary";
-  };
 
   // 处理登录状态变化
   const handleLoginStatus = (status: boolean) => {
@@ -147,7 +132,7 @@ function App() {
                 </Link>
               </li>
               <li>
-                <Link to={getSummaryLink()}>
+                <Link to={"/summary"}>
                   <FontAwesomeIcon
                     icon={faFileAlt}
                     style={{ marginRight: "8px" }}
@@ -269,10 +254,7 @@ function App() {
           <main className="main-content">
             <Routes>
               <Route path="/" element={<HomePage />} />
-              <Route
-                path="/summary"
-                element={<SummaryPage onFileIdChange={handleFileIdChange} />}
-              />
+              <Route path="/summary" element={<SummaryPage />} />
               <Route path="/translate" element={<TranslatePage />} />
               <Route path="/format" element={<FormatPage />} />
               <Route path="/chart" element={<ChartPage />} />
