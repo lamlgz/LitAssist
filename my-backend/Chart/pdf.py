@@ -1,41 +1,44 @@
-import PyPDF2
-import fitz
-from django.core.files.base import ContentFile
-from .models import ImageInfo
-from Home.models import UploadedFile 
+import fitz  # PyMuPDF
+import io
+import base64
+from PIL import Image
+import pdfplumber
+import pandas as pd
 
-def extract_images_from_pdf(file_instance):
-    """
-    从Django模型实例的PDF文件中提取图片并保存到磁盘。
-    
-    :param file_instance: File模型的实例，包含PDF文件
-    """
-    # 确保file_instance有PDF文件
-    pdf_path = file_instance.pdf_file.path
-
+def extract_tables_from_pdf(pdf_path):
     # 打开PDF文件
-    pdf_document = fitz.open(pdf_path)
+    with pdfplumber.open(pdf_path) as pdf:
+        all_tables = []
+        
+        # 遍历所有页面
+        for page_num, page in enumerate(pdf.pages):
+            print(f"正在处理第{page_num + 1}页...")
+            # 提取页面中的所有表格
+            tables = page.extract_tables(table_settings={"vertical_strategy": "lines_strict", "horizontal_strategy": "lines"})
+            for table in tables:
+                all_tables.append(table)
+    return all_tables
 
+def extract_images_from_pdf(pdf_path):
+    # 打开PDF文件
+    doc = fitz.open(pdf_path)
+    
     image_count = 0
-    for page_number in range(len(pdf_document)):
-        page = pdf_document[page_number]
-        images = page.get_images(full=True)
-
-        for img_index, img in enumerate(images):
-            xref = img[0]
-            base_image = pdf_document.extract_image(xref)
+    img_list = []
+    
+    # 遍历每一页
+    for page_num in range(len(doc)):
+        page = doc.load_page(page_num)
+        
+        # 获取页面上的所有图像
+        image_list = page.get_images(full=True)
+        
+        for img_index, img in enumerate(image_list):
+            xref = img[0]  # 图片的xref
+            base_image = doc.extract_image(xref)
             image_bytes = base_image["image"]
-            image_ext = base_image["ext"]
-            image_filename = f"page-{page_number + 1}_img-{img_index + 1}.{image_ext}"
-
-            # 保存图片到数据库
-            extracted_image = ImageInfo(
-                file_id=file_instance.id,
-                image_id=image_filename,
-            )
-            extracted_image.img.save(image_filename, ContentFile(image_bytes), save=True)
-            extracted_image.save()
+            image_base64 = base64.b64encode(image_bytes).decode('utf-8')
+            img_list.append(image_base64)
             
-            image_count += 1
-
-    pdf_document.close()
+    print(f"共提取了 {image_count} 张图片.")
+    return img_list
