@@ -1,34 +1,26 @@
-# views.py
-from django.shortcuts import render
 from django.http import JsonResponse
-from django.core.files.storage import FileSystemStorage
-from gptpdf import parse_pdf
-import os
-# Create your views here.
+from rest_framework.views import APIView
+from Home.models import UploadedFile
+from .tests import upload_pdf
+import json
 
-from rest_framework.response import Response
-from rest_framework.decorators import api_view
-
-@api_view(['GET'])
-def hello_world(request):
-    return Response({"message": "Hello from Django Format!"})
-def upload_pdf(request):
-    if request.method == 'POST' and request.FILES['pdf_file']:
-        pdf_file = request.FILES['pdf_file']
-        fs = FileSystemStorage()
-        filename = fs.save(pdf_file.name, pdf_file)
-        uploaded_file_url = fs.url(filename)  # 获取相对路径，如 '/media/file.pdf'
-        pdf_path = os.path.join(fs.location, filename)
-        output_dir = os.path.join(fs.location, 'output')
-        
+class view_format(APIView):
+    def post(self, request, *args, **kwargs):
         try:
-            content, image_paths = parse_pdf(pdf_path, output_dir=output_dir, model='gpt-4o', verbose=True)
-            return JsonResponse({
-                'content': content,
-                'image_paths': image_paths,
-                'output_dir': uploaded_file_url  # 返回相对路径
-            })
+            # 检查是否有文件上传
+            if 'pdf_file' not in request.FILES:
+                return JsonResponse({"status": "error", "message": "未提供 PDF 文件"}, status=400)
+
+            # 调用 upload_pdf 函数处理文件
+            response = upload_pdf(request)
+
+            # 如果 upload_pdf 返回的是 JsonResponse，直接返回
+            if isinstance(response, JsonResponse):
+                return response
+
+            # 如果 upload_pdf 返回的是其他类型的数据，转换为 JSON 格式
+            return JsonResponse({"status": "success", "data": response}, status=200)
+
         except Exception as e:
-            return JsonResponse({'error': str(e)}, status=400)
-    
-    return render(request, 'upload_pdf.html')
+            # 捕获异常并返回错误信息
+            return JsonResponse({"status": "error", "message": str(e)}, status=500)

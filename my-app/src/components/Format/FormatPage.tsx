@@ -2,10 +2,6 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import './FormatPage.css';
 
-// 定义后端响应的数据类型
-interface HelloResponse {
-  message: string;
-}
 
 // 定义后端响应的数据类型
 interface PdfResponse {
@@ -19,18 +15,6 @@ function FormatPage() {
   const [markdown, setMarkdown] = useState<string>(''); // 后端返回的 Markdown 格式文本
   const [error, setError] = useState<string>(''); // 错误信息
   const [responseContent, setResponseContent] = useState<string>(''); // 后端返回的解析文本内容
-
-
-// 获取后端欢迎消息
-React.useEffect(() => {
-  axios.get<HelloResponse>('http://127.0.0.1:8000/format/hello/')
-    .then(response => {
-      postMessage(response.data.message);
-    })
-    .catch(error => {
-      console.error('Error fetching data:', error);
-    });
-}, []);
 
   // 处理文件选择
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -52,7 +36,7 @@ React.useEffect(() => {
 
   try {
     // 上传文件并指定响应数据类型为 PdfResponse
-    const response = await axios.post<PdfResponse>('http://127.0.0.1:8000/format/pdf/', formData, {
+    const response = await axios.post<PdfResponse>('http://127.0.0.1:8000/format/make_format/', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
