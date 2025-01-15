@@ -12,28 +12,36 @@ class ProcessPDFChartView(APIView):
         try:
             # 从请求中获取 file_id
             file_id = request.data.get("file_id")
+            
             if not file_id:
                 return JsonResponse({"status": "error", "message": "file_id is required"}, status=400)
-
+            
             # 从数据库中获取文件记录
             try:
                 uploaded_file = UploadedFile.objects.get(id=file_id)
             except UploadedFile.DoesNotExist:
                 return JsonResponse({"status": "error", "message": "File not found"}, status=404)
-
+            
             # 获取文件路径
             file_path = uploaded_file.file.path
-
-            pdf_tables = extract_tables_from_pdf(file_path)
-            if not pdf_tables.strip():
-                return JsonResponse({"status": "error", "message": "No Tables extracted from the PDF"}, status=400)
             
-            print("Processing PDF File...")
+            try:
+                pdf_tables = extract_tables_from_pdf(file_path)
+            except Exception as e:
+                pdf_tables = f"Error processing table: {str(e)}"
+            print(pdf_tables)
             
-            pdf_imgs = extract_images_from_pdf()
+            print("Successfully Get tables")
+            try:
+                pdf_imgs = extract_images_from_pdf(file_path)
+            except Exception as e:
+                pdf_imgs = f"Error processing table: {str(e)}"
+            print("Successfully Get imgs")
             ai_result = []
 
             for img in pdf_imgs:
+                i = len(ai_result) + 1
+                print("Processing img{i}...")
                 result = {img: img}
                 description = Zhipu_LLM_chart(img)
                 print(description)
@@ -62,6 +70,7 @@ class PDFChartListView(APIView):
                 'name': file.original_name,
             }
             file_data.append(file_info)
+            print(file_info)
 
         # 返回文件列表
         return JsonResponse({'status': "success",

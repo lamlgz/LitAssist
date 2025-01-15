@@ -1,5 +1,6 @@
 import fitz  # PyMuPDF
 import io
+import os
 import base64
 from PIL import Image
 import pdfplumber
@@ -21,7 +22,11 @@ def extract_tables_from_pdf(pdf_path):
 
 def extract_images_from_pdf(pdf_path):
     # 打开PDF文件
+    if not os.path.exists(pdf_path):
+        raise ValueError(f"PDF file not found at {pdf_path}")
     doc = fitz.open(pdf_path)
+
+    print("Opening pdf")
     
     image_count = 0
     img_list = []
