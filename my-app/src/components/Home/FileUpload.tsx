@@ -1,30 +1,29 @@
 import React, { useState } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faUpload, faFileAlt, faTimes } from "@fortawesome/free-solid-svg-icons";
+import "./FileUpload.css";
 
 interface FileUploadProps {
-  onUploadSuccess?: (fileId: number) => void; // 这里将 fileId 的类型设置为 number
+  onUploadSuccess?: (fileId: number) => void;
 }
 
 const FileUpload: React.FC<FileUploadProps> = ({ onUploadSuccess }) => {
   const [file, setFile] = useState<File | null>(null);
-  const [uploadStatus, setUploadStatus] = useState<string>(""); // 状态提示
-  const [isUploading, setIsUploading] = useState<boolean>(false); // 上传中标志
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
       setFile(event.target.files[0]);
-      setUploadStatus(""); // 清除之前的状态提示
     }
   };
 
   const handleUpload = async () => {
     if (!file) {
-      alert("Please select a file first.");
+      alert("请选择一个文件后再上传！");
       return;
     }
 
     const formData = new FormData();
     formData.append("file", file);
-    setIsUploading(true); // 开始上传
 
     try {
       const response = await fetch("http://127.0.0.1:8000/home/upload/", {
@@ -34,32 +33,56 @@ const FileUpload: React.FC<FileUploadProps> = ({ onUploadSuccess }) => {
 
       if (response.ok) {
         const data = await response.json();
-        console.log("Upload successful:", data);
-
-        const fileId = Number(data.file_id); // 确保 fileId 是 number 类型
-        setUploadStatus("File uploaded successfully!");
-
+        const fileId = Number(data.file_id);
+        alert("文件上传成功！");
         if (onUploadSuccess) {
-          onUploadSuccess(fileId); // 传递 number 类型的 fileId
+          onUploadSuccess(fileId);
         }
       } else {
-        setUploadStatus("File upload failed.");
+        alert("文件上传失败，请重试！");
       }
     } catch (error) {
-      console.error("Error uploading file:", error);
-      setUploadStatus("File upload failed.");
-    } finally {
-      setIsUploading(false); // 上传结束
+      console.error("上传出错：", error);
+      alert("上传失败，请检查网络连接！");
     }
   };
 
+  const handleRemoveFile = () => {
+    setFile(null);
+  };
+
   return (
-    <div className="file-upload-container">
-      <input type="file" onChange={handleFileChange} disabled={isUploading} />
-      <button onClick={handleUpload} disabled={isUploading}>
-        {isUploading ? "Uploading..." : "Upload File"}
-      </button>
-      <p className="upload-status">{uploadStatus}</p>
+    <div className={`file-upload-container ${file ? "has-file" : "no-file"}`}>
+      <div className="upload-section" style={{ display: "flex", alignItems: "center", justifyContent: file ? "flex-start" : "center", width: "100%" }}>
+        <label htmlFor="file-upload" className="upload-button">
+          <FontAwesomeIcon icon={faUpload} className="upload-icon" />
+          点击上传文件
+          <input
+            id="file-upload"
+            type="file"
+            onChange={handleFileChange}
+            hidden
+          />
+        </label>
+        {file && (
+          <div className="file-preview">
+            <div className="file-info">
+              <FontAwesomeIcon icon={faFileAlt} className="file-icon" />
+              <span className="file-name">{file.name}</span>
+            </div>
+            <FontAwesomeIcon
+              icon={faTimes}
+              className="remove-file"
+              onClick={handleRemoveFile}
+            />
+          </div>
+        )}
+      </div>
+      {file && (
+        <button onClick={handleUpload} className="confirm-upload">
+          开始阅读
+        </button>
+      )}
     </div>
   );
 };

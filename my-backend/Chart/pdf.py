@@ -12,11 +12,11 @@ def extract_tables_from_pdf(pdf_path):
         
         # 遍历所有页面
         for page_num, page in enumerate(pdf.pages):
-            print(f"正在处理第{page_num + 1}页...")
             # 提取页面中的所有表格
             tables = page.extract_tables(table_settings={"vertical_strategy": "lines_strict", "horizontal_strategy": "lines"})
             for table in tables:
-                all_tables.append(table)
+                data = {"table":table}
+                all_tables.append(data)
     return all_tables
 
 def extract_images_from_pdf(pdf_path):
@@ -40,5 +40,4 @@ def extract_images_from_pdf(pdf_path):
             image_base64 = base64.b64encode(image_bytes).decode('utf-8')
             img_list.append(image_base64)
             
-    print(f"共提取了 {image_count} 张图片.")
     return img_list

@@ -1,42 +1,84 @@
 .page-container {
-  padding: 20px;
-  font-family: Arial, sans-serif;
-  max-width: 800px; /* 限制内容宽度 */
-  margin: 50px auto; /* 上下各增加 50px 的距离，居中布局 */
+  padding: 200px;
+  max-width: 1000px;
+  margin: 0 auto;
 }
 
 .page-title {
+  font-size: 2em;
   text-align: center;
-  font-size: 28px;
-  font-weight: bold;
-  margin-bottom: 30px;
-  margin-top: 800px; /* 适当调整标题与顶部的距离 */
+  margin-bottom: 50px;
   color: #333;
 }
 
 .file-summary {
-  display: flex;
-  flex-direction: column; /* 从上到下排列 */
-  gap: 20px; /* 每部分间距 */
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* 一行两个卡片 */
+  gap: 20px;
 }
 
-.summary-section {
-  padding: 15px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  background-color: #f9f9f9;
+.summary-card {
+  background: #f9f9fc; /* 默认浅蓝紫色背景 */
+  border: 1px solid #dce3f0;
+  border-radius: 10px;
+  padding: 20px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  margin-bottom: 30px; /* 增加每个部分之间的间距 */
+  text-align: left;
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+ 
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif; /* 使用更美观的字体 */
 }
 
-.summary-section h3 {
-  font-size: 20px;
-  color: #333;
+.card-header {
+  display: flex;
+  gap: 10px;
   margin-bottom: 10px;
+  align-items: center;
 }
 
-.summary-section p {
-  font-size: 16px;
+.card-header h3 {
+  font-size: 1.4em;
+  font-weight: bold;
+  margin: 0;
+  color: #333;
+}
+
+.summary-icon {
+  font-size: 1.6em;
+  color: #6272a4;
+}
+
+.summary-card p {
+  font-size: 20px;
   color: #555;
-  line-height: 1.5;
+  margin-top: 0px;
+  margin: 5px 0;
+}
+
+/* 作者和关键词内部内容左对齐 */
+.summary-card-authors div p,
+.summary-card-keywords div p {
+  margin: 5px 0;
+}
+
+/* 卡片内部样式 */
+.card-container {
+  font-size: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  justify-content: center; /* 上下居中 */
+  margin-top: 30px;
+}
+
+.arrow-icon {
+  font-size: 1em;
+  color: #888;
+}
+
+/* 鼠标悬停效果 */
+.summary-card:hover {
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
 }
