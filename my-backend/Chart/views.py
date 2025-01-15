@@ -1,10 +1,47 @@
-from django.shortcuts import render
+from django.http import JsonResponse
+from rest_framework.views import APIView
+from Home.models import UploadedFile
+from .pdf import extract_tables_from_pdf, extract_images_from_pdf
+from .llm import Zhipu_LLM_chart
+import json
 
-# Create your views here.
+class ProcessPDFChartView(APIView):
+    def post(self, request, *args, **kwargs):
+        """根据文件 ID 处理 PDF 文件并提取详细信息"""
+        try:
+            # 从请求中获取 file_id
+            file_id = request.data.get("file_id")
+            if not file_id:
+                return JsonResponse({"status": "error", "message": "file_id is required"}, status=400)
 
-from rest_framework.response import Response
-from rest_framework.decorators import api_view
+            # 从数据库中获取文件记录
+            try:
+                uploaded_file = UploadedFile.objects.get(id=file_id)
+            except UploadedFile.DoesNotExist:
+                return JsonResponse({"status": "error", "message": "File not found"}, status=404)
 
-@api_view(['GET'])
-def hello_world(request):
-    return Response({"message": "Hello from Django Chart!"})
+            # 获取文件路径
+            file_path = uploaded_file.file.path
+
+            pdf_tables = extract_tables_from_pdf(file_path)
+            if not pdf_tables.strip():
+                return JsonResponse({"status": "error", "message": "No Tables extracted from the PDF"}, status=400)
+            
+            pdf_imgs = extract_images_from_pdf()
+            ai_result = []
+
+            for img in pdf_imgs:
+                result = {img: img}
+                description = Zhipu_LLM_chart(img)
+                result['description'] = description
+                ai_result.append(result)
+            
+            # 返回生成的详细信息和文件 ID
+            return JsonResponse({
+                "status": "success",
+                "file_id": uploaded_file.id,  # 返回文件 ID
+                "table_data": pdf_tables,#返回表格的列表
+                "img_data": ai_result  # 返回图片及描述的列表
+            })
+        except Exception as e:
+            return JsonResponse({"status": "error", "message": str(e)}, status=500)
