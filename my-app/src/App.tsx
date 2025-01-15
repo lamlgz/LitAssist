@@ -74,6 +74,10 @@ function App() {
     return fileId ? `/summary?fileId=${fileId}` : "/summary";
   };
 
+  const getSearchLink = () => {
+    return fileId ? `/search?fileId=${fileId}` : "/search";
+  };
+
   // 处理登录状态变化
   const handleLoginStatus = (status: boolean) => {
     setIsLoggedIn(status);
@@ -183,7 +187,7 @@ function App() {
                 </Link>
               </li>
               <li>
-                <Link to="/search">
+                <Link to={getSearchLink()}>
                   <FontAwesomeIcon
                     icon={faSearch}
                     style={{ marginRight: "8px" }}
