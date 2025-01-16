@@ -111,7 +111,7 @@ const SummaryPage: React.FC = () => {
   if (loading) {
     return (
       <div className="page-container">
-        <p>加载中...</p>
+        <p className="loading-message">加载中...</p>
       </div>
     );
   }

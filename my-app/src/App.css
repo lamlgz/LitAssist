@@ -86,7 +86,7 @@
 .main-content {
   flex: 1;
   padding: 20px;
-  background: linear-gradient(to bottom, #eeedfc,#ffffff); /* 白色到浅灰渐变 */
+  background: linear-gradient(to bottom, #eeedfc,#ffffff); 
   overflow-y: auto;
 }
 
@@ -181,4 +181,14 @@
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+.loading-message{
+  margin-top: -600px;
+  font-size: large;
+}
+
+.error-message{
+  margin-top: -600px;
+  font-size: large;
 }

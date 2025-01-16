@@ -1,6 +1,6 @@
 from django.test import TestCase
 
-# Create your tests here.
+# 测试AI调用
 
 from django.test import TestCase
 from .read_pdf import extract_text_from_pdf
